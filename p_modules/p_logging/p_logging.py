@@ -4,7 +4,7 @@ import re
 
 MAX_LOG_LENGTH = 100
 REPLACE_LONG_LOG = "......"
-SENSITIVE_REX = "[password|session|phone](.{1,20})"
+SENSITIVE_REX = r"password|session|phone(.{1,20})"
 SENSITIVE_REPLACE_VALUE = "******#####*****"
 
 def deal_msg(msg):
@@ -13,9 +13,11 @@ def deal_msg(msg):
     :param msg: 原日志信息
     :return: 处理后的日志信息
     """
-    if len(msg) > 100:
+    if len(msg) > MAX_LOG_LENGTH:
         msg = msg[:MAX_LOG_LENGTH] + REPLACE_LONG_LOG
-    msg = re.sub(SENSITIVE_REX, SENSITIVE_REPLACE_VALUE, msg)
+    sensitive_list = re.findall(SENSITIVE_REX, msg)
+    for sensitive_string in sensitive_list:
+        msg = msg.replace(sensitive_string, SENSITIVE_REPLACE_VALUE)
     return msg
 
 
